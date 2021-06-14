@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const { check, validationResult } = require('express-validator')
+const config = require('config')
 const gravatar = require('gravatar')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const User = require('../../models/User')
 // before every route i want to put three things
 //@route and then request type which is GET and the endpoint which will be api/users
@@ -52,13 +54,31 @@ router.post(
         avatar,
         password,
       })
+      // Encrypt password using bcrypt.
       const salt = await bcrypt.genSalt(10)
       user.password = await bcrypt.hash(password, salt)
       await user.save()
-      // Encrypt password using bcrypt.
+
       // Return jsonwebtoken
 
-      res.send('User registered')
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      }
+      jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        {
+          expiresIn: 360000,
+        },
+        (err, token) => {
+          if (err) throw err
+          res.json({ token })
+        }
+      )
+      // just the reiterate we go through create the user, hash the password, save the user in the database,get the payload which includes the user id and then we sign the token, passing the payload, passing the secret,expiration which is optional,and then inside the callback we either get an error or we get the token. if we get the token or do not get an error then we are going to send token back to the client.
+      //res.send('User registered')
     } catch (err) {
       console.error(err.message)
       res.status(500).send('Server error')
