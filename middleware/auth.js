@@ -1,3 +1,4 @@
+// we created middleware so that we could verify the jsonwebtoken that comes in from the client basically authenticate our users.
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const { response } = require('express')
