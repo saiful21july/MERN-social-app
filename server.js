@@ -5,7 +5,7 @@ const app = express()
 connectDB()
 // in order to work req.body in users file, we have to initialize middleware for the body parser.
 // initialize middleware
-app.use(express.json({ extended: false }))
+app.use(express.json({ extended: false })) //what does it do?
 app.get('/', (req, res) => res.send('API running'))
 // define Routes
 app.use('/api/users', require('./routes/api/users'))
